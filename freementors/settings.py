@@ -52,6 +52,7 @@ GRAPHQL_JWT = {
     "JWT_REFRESH_EXPIRATION_DELTA": timedelta(days=7),
     "JWT_SECRET_KEY": SECRET_KEY,
     "JWT_ALGORITHM": "HS256",
+    'JWT_PAYLOAD_HANDLER': 'mentorship.utils.custom_jwt_payload_handler',
 }
 
 GRAPHENE = {

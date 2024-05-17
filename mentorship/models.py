@@ -1,5 +1,9 @@
-from django.contrib.auth.models import AbstractBaseUser
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.db import models
+
+class UserManager(BaseUserManager):
+    def get_by_natural_key(self, email):
+        return self.get(email=email)
 
 class User(AbstractBaseUser):
     USER_ROLES = (
@@ -21,8 +25,10 @@ class User(AbstractBaseUser):
 
     USERNAME_FIELD = 'email'
     
+    objects = UserManager()  
+    
     def __str__(self):
-        return self.user.username
+        return self.email
     
 
 class MentorshipSession(models.Model):

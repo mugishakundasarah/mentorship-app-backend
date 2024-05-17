@@ -3,6 +3,8 @@ import graphql_jwt
 from graphql_jwt.shortcuts import create_refresh_token, get_token
 from .models import User
 from .types import UserType
+from graphql_jwt.decorators import login_required
+from .utils import mentee_required
 
 class RegisterUser(graphene.Mutation):
     class Arguments:
@@ -39,12 +41,29 @@ class RegisterUser(graphene.Mutation):
 
         return RegisterUser(user=user, token=token, refresh_token=refresh_token)
     
+class RequestToBeMentor(graphene.Mutation):
+    class Arguments:
+        pass 
+
+    user = graphene.Field(UserType)
+
+    @mentee_required
+    def mutate(self, info):
+        user = info.context.user
+        if user.role == 'mentee':
+            user.role = 'mentor'
+            user.save()
+            return RequestToBeMentor(user=user)
+        else:
+            # If the user is not a mentee, raise an exception
+            raise Exception("You must be a mentee to request to be a mentor.")
 
 class Mutation(graphene.ObjectType):
     token_auth = graphql_jwt.ObtainJSONWebToken.Field()
     verify_token = graphql_jwt.Verify.Field()
     refresh_token = graphql_jwt.Refresh.Field()
     register_user = RegisterUser.Field()
+    request_to_be_mentor = RequestToBeMentor.Field()
 
 class Query(graphene.ObjectType):
     all_mentors = graphene.List(UserType)
