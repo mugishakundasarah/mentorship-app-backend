@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.db import models
+from django.utils import timezone
 
 class UserManager(BaseUserManager):
     def get_by_natural_key(self, email):
@@ -34,8 +35,8 @@ class User(AbstractBaseUser):
 class MentorshipSession(models.Model):
     mentor = models.ForeignKey(User, on_delete=models.CASCADE)
     mentee = models.ForeignKey(User, on_delete=models.CASCADE, related_name='mentee_sessions')
-    date = models.DateField()
-    time = models.TimeField()
+    date = models.DateField(default=timezone.now)  
+    time = models.TimeField(default=timezone.now)  
     STATUS = (
         ('pending', 'Pending'),
         ('accepted', 'Accepted'),
